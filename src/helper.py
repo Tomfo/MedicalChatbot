@@ -3,7 +3,10 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from typing import List
 from langchain.schema import Document
 from langchain.embeddings import HuggingFaceEmbeddings
+from langchain_openai import OpenAIEmbeddings
+from dotenv import load_dotenv
 
+load_dotenv()
 
 # load pdf files from a directory and return a list of documents
 def load_pdf_files(data):
@@ -29,14 +32,22 @@ def filter_to_minimal_documents(docs: List[Document]) -> List[Document]:
 def split_documents(documents: List[Document], chunk_size: int = 1000, chunk_overlap: int = 200) -> List[Document]:
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=chunk_size,
-        chunk_overlap=chunk_overlap        
+        chunk_overlap=chunk_overlap,
+        length_function=len      
     )
     return text_splitter.split_documents(documents)
 
 
-def download_embeddings(model_name: str = "sentence-transformers/all-MiniLM-L6-v2") -> HuggingFaceEmbeddings:
+def download_huggingface_embeddings(model_name: str = "sentence-transformers/all-MiniLM-L6-v2") -> HuggingFaceEmbeddings:
     embeddings = HuggingFaceEmbeddings(
         model_name=model_name)
     
     return embeddings
-embedding = download_embeddings()
+embedding = download_huggingface_embeddings()
+
+def download_openai_embeddings(model_name: str = "text-embedding-3-small") -> OpenAIEmbeddings:
+    embeddings = OpenAIEmbeddings(
+        model=model_name)
+    
+    return embeddings
+embedding = download_openai_embeddings()

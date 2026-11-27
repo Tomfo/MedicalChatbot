@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 import os
-from src.helper import load_pdf_files, filter_to_minimal_documents, split_documents, download_embeddings
+from src.helper import load_pdf_files, filter_to_minimal_documents, split_documents, download_huggingface_embeddings, download_openai_embeddings
 from pinecone import Pinecone
 from langchain_pinecone import PineconeVectorStore
 
@@ -16,7 +16,7 @@ extracted_data = load_pdf_files(data='./knowledge_base')
 filtered_data = filter_to_minimal_documents(extracted_data)
 text_chunks = split_documents(filtered_data)
 
-embeddings = download_embeddings()
+embeddings = download_huggingface_embeddings()
 
 pincecone_api_key = PINECONE_API_KEY
 pc = Pinecone(api_key=pincecone_api_key)
