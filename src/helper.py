@@ -1,19 +1,23 @@
-from langchain.document_loaders import PyPDFLoader,DirectoryLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.document_loaders import PyPDFLoader, DirectoryLoader
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from typing import List
-from langchain.schema import Document
-from langchain.embeddings import HuggingFaceEmbeddings
+from langchain_core.documents import Document
+
+# from langchain.embeddings import HuggingFaceEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_openai import OpenAIEmbeddings
 from dotenv import load_dotenv
 
 load_dotenv()
 
 # load pdf files from a directory and return a list of documents
+
+
 def load_pdf_files(data):
     loader = DirectoryLoader(
-    data, 
-    glob="**/*.pdf", 
-    loader_cls=PyPDFLoader)
+        data,
+        glob="**/*.pdf",
+        loader_cls=PyPDFLoader)
     documents = loader.load()
     return documents
 
@@ -24,16 +28,18 @@ def filter_to_minimal_documents(docs: List[Document]) -> List[Document]:
         src = doc.metadata.get('source', '')
         minimal_documents.append(
             Document(
-                page_content=doc.page_content, 
+                page_content=doc.page_content,
                 metadata={'source': src}))
     return minimal_documents
 
 # split the documents into chunks
+
+
 def split_documents(documents: List[Document], chunk_size: int = 1000, chunk_overlap: int = 200) -> List[Document]:
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=chunk_size,
         chunk_overlap=chunk_overlap,
-        length_function=len      
+        length_function=len
     )
     return text_splitter.split_documents(documents)
 
@@ -41,13 +47,18 @@ def split_documents(documents: List[Document], chunk_size: int = 1000, chunk_ove
 def download_huggingface_embeddings(model_name: str = "sentence-transformers/all-MiniLM-L6-v2") -> HuggingFaceEmbeddings:
     embeddings = HuggingFaceEmbeddings(
         model_name=model_name)
-    
+
     return embeddings
+
+
 embedding = download_huggingface_embeddings()
+
 
 def download_openai_embeddings(model_name: str = "text-embedding-3-small") -> OpenAIEmbeddings:
     embeddings = OpenAIEmbeddings(
         model=model_name)
-    
+
     return embeddings
+
+
 embedding = download_openai_embeddings()
